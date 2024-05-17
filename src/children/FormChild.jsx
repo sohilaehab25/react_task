@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 
-function FormChild({ ListChildren, setChild }) {
-    const [formData, setFormData] = useState({
+function FormChild({ onAddChild,initialData }) {
+    const [formData, setFormData] = useState(initialData || {
         fullName: '',
         age: '',
         level: '',
@@ -19,13 +19,13 @@ function FormChild({ ListChildren, setChild }) {
         e.preventDefault();
         const newErrors = validateForm(formData);
         setErrors(newErrors);
-    
+
         if (Object.keys(newErrors).length === 0) {
-            setChild([...ListChildren, formData]);
+            onAddChild({ ...formData, id: Date.now() });
             resetForm();
         }
     };
-    
+
     const validateForm = (data) => {
         let errors = {};
 
@@ -184,9 +184,6 @@ function FormChild({ ListChildren, setChild }) {
                         checked={formData.age_less_than_3}
                         onChange={handleChange}
                     />
-                    <Form.Control.Feedback type="invalid" tooltip>
-                        {errors.age_less_than_3}
-                    </Form.Control.Feedback>
                 </Form.Group>
             </Row>
             <Button type="submit">Submit Child</Button>

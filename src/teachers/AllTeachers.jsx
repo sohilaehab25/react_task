@@ -1,7 +1,7 @@
 import React from 'react';
 import TeacherInfo from './Teachersinfo';
 
-function Teacher(props) {
+function AllTeacher(props) {
 
     return (
         
@@ -14,9 +14,9 @@ function Teacher(props) {
                  <TeacherInfo  image="./images/floor3.jpg"  name="hajar" desc = "teacher of classB"/>
                  <TeacherInfo  image="./images/image2.jpg"  name="nada" desc = "teacher of classC"/>
                  </div>
-            </div>
+            </div>=-----------.
         </div>
     )
 }
 
-export default Teacher;
+export default AllTeacher;

@@ -1,0 +1,16 @@
+/* NavBar.css */
+.nav-link {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    color: lightgray;
+  }
+  
+  .active-nav-link {
+    color: #28a745; /* Bootstrap success color */
+    font-weight: bold;
+  }
+  

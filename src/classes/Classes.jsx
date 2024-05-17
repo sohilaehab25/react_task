@@ -10,9 +10,12 @@ function CLasses(props) {
     <div className="card-container">
      
         <Card style={{ width: '18rem' }}>
+          <Card.Header>
+            <h3 className='text-dark text-center'>class info</h3>
+          </Card.Header>
           <Card.Body>
-            <Card.Title>{props.name}</Card.Title>
-            <Button variant="outline-dark">Go for more info</Button>
+            <Card.Title>{props.name}</Card.Title> 
+            <Button variant="outline-dark">Go fo more info</Button>
           </Card.Body>
         </Card>
     </div>

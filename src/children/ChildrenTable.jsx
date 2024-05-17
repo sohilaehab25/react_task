@@ -1,47 +1,43 @@
 import React from 'react';
-import { Button, Table } from 'react-bootstrap';
-// import ListChildren from './ListChildren';
+import { Table } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
-function ChildrenTable({ListChildren,onDelete }) {
+function ChildrenTable({ childrenList, onDelete }) {
     return (
-      <div className='mt-4 bg-light p-5'>
-
-        <Table striped bordered hover size="sm">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Full Name</th>
-                    <th>Age</th>
-                    <th>Level</th>
-                    <th>City</th>
-                    <th>Street</th>
-                    <th>Building</th>
-                    <th>Image</th>
-                    <th>Age less than 3</th>
-                </tr>
-            </thead>
-            <tbody>
-                {ListChildren.map((ListChildren, index) => (
-                    <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{ListChildren.fullName}</td>
-                        <td>{ListChildren.age}</td>
-                        <td>{ListChildren.level}</td>
-                        <td>{ListChildren.city}</td>
-                        <td>{ListChildren.street}</td>
-                        <td>{ListChildren.building}</td>
-                        <td>{ListChildren.image}</td>
-                        <td>{ListChildren.age_less_than_3 ? 'Yes' : 'No'}</td>
-                        <td>
-                            <Button variant="danger" onClick={() => onDelete(index)}>
-                                Delete
-                            </Button>
-                        </td>
-                        
+        <div className='mt-4 bg-light p-5 w-30 h-30'>
+            <Link to={`/add_child`}>
+                <i className="bi bi-person-plus fs-1 text-primary m-2"></i>
+            </Link>
+            <Table striped bordered hover size="lg">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Age</th>
+                        <th>Level</th>
+                        <th>Actions</th>
                     </tr>
-                ))}
-            </tbody>
-        </Table>
+                </thead>
+                <tbody>
+                    {childrenList.map((child, id) => (
+                        <tr key={id}>
+                            <td>{child.id}</td>
+                            <td>{child.fullName}</td>
+                            <td>{child.age}</td>
+                            <td>{child.level}</td>
+                            <td>
+                                <Link to={`/child_info/${child.id}`}>
+                                    <i className="bi bi-eye fs-2 text-warning mx-2"></i>
+                                </Link>
+                                <Link to={`/child_update/${child.id}`}>
+                                <i className="bi bi-pencil-square fs-2 text-dark mx-2"></i>
+                                </Link>
+                                <i className="bi bi-person-x fs-2 text-danger mx-2" onClick={() => onDelete(id)}></i>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
         </div>
     );
 }
