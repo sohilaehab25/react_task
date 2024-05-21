@@ -1,30 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom'
+import { getChildById, addNewChild, editChild } from '../api/ChildApi';
 
-function FormChild({ onAddChild,initialData }) {
+
+function FormChild({ initialData }) {
     const [formData, setFormData] = useState(initialData || {
         fullName: '',
         age: '',
         level: '',
-        city: '',
-        street: '',
-        building: '',
+        address: {
+            city: '',
+            street: '',
+            building: '',
+        },
         image: '',
-        age_less_than_3: false,
     });
+    const { _id } = useParams();
+    const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const newErrors = validateForm(formData);
-        setErrors(newErrors);
-
-        if (Object.keys(newErrors).length === 0) {
-            onAddChild({ ...formData, id: Date.now() });
-            resetForm();
+    useEffect(() => {
+        if (_id) {
+            const fetchData = async () => {
+                const response = await getChildById(_id);
+                setFormData(response.data);
+            }
+            fetchData();
         }
-    };
+    }, [_id]);
 
     const validateForm = (data) => {
         let errors = {};
@@ -38,13 +43,13 @@ function FormChild({ onAddChild,initialData }) {
         if (!data.level) {
             errors.level = 'Level is required';
         }
-        if (!data.city) {
+        if (!data.address.city) {
             errors.city = 'City is required';
         }
-        if (!data.street) {
+        if (!data.address.street) {
             errors.street = 'Street is required';
         }
-        if (!data.building) {
+        if (!data.address.building) {
             errors.building = 'Building is required';
         }
         if (!data.image) {
@@ -59,22 +64,69 @@ function FormChild({ onAddChild,initialData }) {
             fullName: '',
             age: '',
             level: '',
-            city: '',
-            street: '',
-            building: '',
+            address: {
+                city: '',
+                street: '',
+                building: '',
+            },
             image: '',
-            age_less_than_3: false,
         });
     };
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        const newValue = type === 'checkbox' ? checked : value;
-        setFormData({ ...formData, [name]: newValue });
+        const { name, value, type, files } = e.target;
+        const newValue = type === 'file' ? files[0] : value;
+    
+        if (name.startsWith('address.')) {
+            const addressField = name.split('.')[1];
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                address: {
+                    ...prevFormData.address,
+                    [addressField]: newValue
+                }
+            }));
+        } else {
+            setFormData({
+                ...formData,
+                [name]: newValue
+            });
+        }
     };
+    
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const newErrors = validateForm(formData);
+        setErrors(newErrors);
+    
+        if (Object.keys(newErrors).length === 0) {
+            try {
+                const data = new FormData();
+                data.append('fullName', formData.fullName);
+                data.append('age', formData.age);
+                data.append('level', formData.level);
+                data.append('address[city]', formData.address.city);
+                data.append('address[street]', formData.address.street);
+                data.append('address[building]', formData.address.building);
+                data.append('image', formData.image);
+    
+                if (!_id) {
+                    await addNewChild(data);
+                } else {
+                    await editChild(data, _id);
+                }
+                navigate('/list_all_children');
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    };
+    
+
 
     return (
-        <Form noValidate onSubmit={handleSubmit}>
+        <Form noValidate onSubmit={handleSubmit} action="list_all_children" method="post" encType="multipart/form-data" >
             <Row className="mb-3">
                 <Form.Group as={Col} md="4" controlId="validationFormik101" className="position-relative">
                     <Form.Label>Full Name</Form.Label>
@@ -111,10 +163,12 @@ function FormChild({ onAddChild,initialData }) {
                         onChange={handleChange}
                         isInvalid={!!errors.level}
                     >
+
+
                         <option value="">Select Level</option>
-                        <option value="Kg1">Kg1</option>
-                        <option value="Kg2">Kg2</option>
-                        <option value="PreKG1">PreKG1</option>
+                        <option value="KG1">KG1</option>
+                        <option value="KG2">KG2</option>
+                        <option value="PreKG">PreKG</option>
                     </Form.Select>
                     <Form.Control.Feedback type="invalid" tooltip>
                         {errors.level}
@@ -126,8 +180,8 @@ function FormChild({ onAddChild,initialData }) {
                     <Form.Label>City</Form.Label>
                     <Form.Control
                         type="text"
-                        name="city"
-                        value={formData.city}
+                        name="address.city"
+                        value={formData.address.city}
                         onChange={handleChange}
                         isInvalid={!!errors.city}
                     />
@@ -139,8 +193,8 @@ function FormChild({ onAddChild,initialData }) {
                     <Form.Label>Street</Form.Label>
                     <Form.Control
                         type="text"
-                        name="street"
-                        value={formData.street}
+                        name="address.street"
+                        value={formData.address.street}
                         onChange={handleChange}
                         isInvalid={!!errors.street}
                     />
@@ -152,8 +206,8 @@ function FormChild({ onAddChild,initialData }) {
                     <Form.Label>Building</Form.Label>
                     <Form.Control
                         type="text"
-                        name="building"
-                        value={formData.building}
+                        name="address.building"
+                        value={formData.address.building}
                         onChange={handleChange}
                         isInvalid={!!errors.building}
                     />
@@ -161,7 +215,8 @@ function FormChild({ onAddChild,initialData }) {
                         {errors.building}
                     </Form.Control.Feedback>
                 </Form.Group>
-            </Row>
+            </Row>    
+
             <Row className="mb-3">
                 <Form.Group as={Col} md="4" controlId="validationFormik106" className="position-relative">
                     <Form.Label>Image</Form.Label>
@@ -175,15 +230,6 @@ function FormChild({ onAddChild,initialData }) {
                     <Form.Control.Feedback type="invalid" tooltip>
                         {errors.image}
                     </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group as={Col} md="4" controlId="validationFormik107" className="position-relative">
-                    <Form.Check
-                        type="checkbox"
-                        name="age_less_than_3"
-                        label="Age less than 3"
-                        checked={formData.age_less_than_3}
-                        onChange={handleChange}
-                    />
                 </Form.Group>
             </Row>
             <Button type="submit">Submit Child</Button>

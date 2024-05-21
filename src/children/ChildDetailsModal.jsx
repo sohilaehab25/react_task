@@ -1,29 +1,49 @@
-// ChildDetailsModal.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Card } from 'react-bootstrap';
+import { getChildById } from '../api/ChildApi';
 
 function ChildDetailsModal({ show, handleClose, child }) {
-    return (
+    const [childDetails, setChildDetails] = useState(null);
+
+    useEffect(() => {
+        const fetchChildData = async () => {
+            try {
+                const res = await getChildById(child._id)
+                console.log(child._id)
+                setChildDetails(res.data);
+            } catch (error) {
+                console.log(error); 
+            }
+        };
+    
+        if (child && child._id) {
+            fetchChildData();
+        }
+    }, [child]);
+        return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Child Details</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {child && (
+                {childDetails ? (
                     <Card>
-                        <Card.Img variant="top" src={child.image} />
+                        {/* Display the child's image */}
+                        <Card.Img variant="top" src={`http://localhost:8080/images/${childDetails.Image}`} />
                         <Card.Body>
-                            <Card.Title>{child.fullName}</Card.Title>
+                            <Card.Title>{childDetails.fullName}</Card.Title>
                             <Card.Text>
-                                <strong>Age:</strong> {child.age} <br />
-                                <strong>Level:</strong> {child.level} <br />
-                                <strong>City:</strong> {child.city} <br />
-                                <strong>Street:</strong> {child.street} <br />
-                                <strong>Building:</strong> {child.building} <br />
-                                <strong>Age less than 3:</strong> {child.age_less_than_3 ? 'Yes' : 'No'}
+                                <strong>Age:</strong> {childDetails.age} <br />
+                                <strong>Level:</strong> {childDetails.level} <br />
+                                <strong>City:</strong> {childDetails.address.city} <br />
+                                <strong>Street:</strong> {childDetails.address.street} <br />
+                                <strong>Building:</strong> {childDetails.address.building || 'N/A'} <br />
+                                {/* <strong>Age less than 3:</strong> {childDetails.age < 3 ? 'Yes' : 'No'} */}
                             </Card.Text>
                         </Card.Body>
                     </Card>
+                ) : (
+                    <p>Loading...</p>
                 )}
             </Modal.Body>
             <Modal.Footer>
