@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom'
-import { getChildById, addNewChild, editChild } from '../api/ChildApi';
+import { getChildById, addNewChild, editChild} from '../api/ChildApi';
+import { GetTeacherById } from '../api/teacherApi';
 
 
 function FormChild({ initialData }) {
@@ -17,6 +18,7 @@ function FormChild({ initialData }) {
         image: '',
     });
     const { _id } = useParams();
+    
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
@@ -24,11 +26,12 @@ function FormChild({ initialData }) {
     useEffect(() => {
         if (_id) {
             const fetchData = async () => {
-                const response = await getChildById(_id);
+                const response = await getChildById (_id);
                 setFormData(response.data);
             }
-            fetchData();
+            // fetchData();
         }
+        console.log(_id);
     }, [_id]);
 
     const validateForm = (data) => {
@@ -59,19 +62,19 @@ function FormChild({ initialData }) {
         return errors;
     };
 
-    const resetForm = () => {
-        setFormData({
-            fullName: '',
-            age: '',
-            level: '',
-            address: {
-                city: '',
-                street: '',
-                building: '',
-            },
-            image: '',
-        });
-    };
+    // const resetForm = () => {
+    //     setFormData({
+    //         fullName: '',
+    //         age: '',
+    //         level: '',
+    //         address: {
+    //             city: '',
+    //             street: '',
+    //             building: '',
+    //         },
+    //         image: '',
+    //     });
+    // };
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
@@ -218,7 +221,7 @@ function FormChild({ initialData }) {
             </Row>    
 
             <Row className="mb-3">
-                <Form.Group as={Col} md="4" controlId="validationFormik106" className="position-relative">
+            <Form.Group as={Col} md="8" controlId="validationFormik105" className="position-relative">
                     <Form.Label>Image</Form.Label>
                     <Form.Control
                         type="file"
@@ -232,7 +235,11 @@ function FormChild({ initialData }) {
                     </Form.Control.Feedback>
                 </Form.Group>
             </Row>
-            <Button type="submit">Submit Child</Button>
+            <Button type="submit">
+                {
+                    !_id ? "add_new_child" : "edit "
+                }
+            </Button>
         </Form>
     );
 }

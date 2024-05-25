@@ -15,7 +15,7 @@ function ChildrenTable() {
                 const res = await getAllChildren();
                 setChildren(res.data);
             } catch (error) {
-                console.error(error); // Log any errors that occur during the request
+                console.error(error); 
             }
         };
 

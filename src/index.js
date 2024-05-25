@@ -6,6 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "bootstrap-icons/font/bootstrap-icons.css"
+import { Provider } from 'react-redux';
+import { nursery } from './redux';
 // import "react-bootstrap-icons/dist/icons"
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,6 +15,11 @@ root.render(
     <App />
   </React.StrictMode>
 );
+root.render(
+  <Provider store =  {nursery}>
+    <App/>
+  </Provider>)
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
